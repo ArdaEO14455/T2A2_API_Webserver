@@ -1,26 +1,21 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from os import environ
+from blueprints.cli_bp import cli_bp
+from blueprints.auth_bp import auth_bp
+from init import db, ma
 
+
+def setup():
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://stock_taker:password@localhost:5432/stock'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URI')
 
-db = SQLAlchemy(app)
+db.init_app(app)
+ma.init_app(app)
 
-class Stock_List(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text())
-    company = db.Column(db.Text())
-    quantity = db.Column(db.Integer)
 
-@app.cli.command('create')
-def create_db():
-    db.create_all()
-    print('Stock Tables Created Successfully')
-
-@app.route('/')
-def index():
-    return 'Hello, world'
+app.register_blueprint(cli_bp)
+app.register_blueprint(auth_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)
