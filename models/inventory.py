@@ -1,6 +1,7 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
+from models.items import *
 
 class Stock_List(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +22,7 @@ class Bar_Items(db.Model):
     company = db.Column(db.Text)
     item_type = db.Column(db.Text()) #Wine, Beer, Spirit, Liqueur, Soft Drink
     item_type_category = db.Column(db.Text()) #Shiraz, IPA, Sauvignon Blanc
-    unit = db.Column(db.Category()) #bottle, can, keg, etc 
+    unit = db.Column(db.Category()) #bottle, can, keg, etc
     quantity = db.Column(db.Integer)
     max_quantity = db.Column(db.Integer)
     bar_price = db.Column(db.Integer)
