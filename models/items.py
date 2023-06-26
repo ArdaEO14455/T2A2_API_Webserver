@@ -1,23 +1,44 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
-from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
+from marshmallow.validate import Regexp, ValidationError
 
 VALID_CATEGORIES = ['Beer', 'Wine', 'Spirit']
 VALID_UNITS = ['Can', 'Bottle', 'Keg']
 
 #Beer Information
 
-class Item:
+class Item(db.Model):
     __tablename__ = 'items'
 
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.relationship('Stock_Item', back_populates='item_name')
+    name = db.relationship('Stock', back_populates='item_name')
     category = db.Column(db.Text())
     type = db.Column(db.Text()) # db.relationship('Beer_type')
     company = db.Column(db.Text)
     unit = db.Column(db.Text)
-    unit_volume = db.Column(db.Integer)
+    volume = db.Column(db.Integer)
     alcohol_content = db.Column(db.Float)
 
-# class ItemSchema(ma.Schema):
+class ItemSchema(ma.Schema):
+    name = fields.String(required=True, validate=(Regexp('^[a-zA-Z0-9]+$', error='Special Characters (#,$,@ etc) are not allowed')))
+    type = fields.String(required=True)
+    company = fields.String(required=True)
+    volume = fields.Integer
+
+    @validates_schema()
+    def validate_category(self, data, **kwargs):
+            category = [x for x in VALID_CATEGORIES if x.upper() == data['category'].upper()]
+            if len(category) == 0:
+                 raise ValidationError(f'Category must be filled in with one of: {VALID_CATEGORIES}')
+            data['category'] = category [0]
+    def validate_units(self, data, **kwargs):
+            unit = [x for x in VALID_UNITS if x.upper() == data['unit'].upper()]
+            if len(unit) == 0:
+                 raise ValidationError(f'Invalid Unit, must be one of the following: {VALID_CATEGORIES}')
+            data['unit'] = unit[0]
+
+class Meta:
+    fields = ('id', 'name', 'category', 'type', 'company', 'unit', 'volume', 'alcohol_content')
+    ordered = True
+

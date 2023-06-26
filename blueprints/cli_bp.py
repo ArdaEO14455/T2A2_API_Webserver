@@ -18,16 +18,17 @@ def clear_db():
 @cli_bp.cli.command('create_inventory')
 def create_inventory():
     stock = [
-        Stock_item(
+        Stock(
+
             item_name="nectar",
             company="WTB",
             quantity=5 ,
-            item_type="beer" ,
+            item_type="Beer" ,
             item_type_category="NEIPA" ,
-            unit="can",
+            unit="Can",
             cost_price=5
         ),
-        Stock_item(
+        Stock(
             item_name = 'Nectar of the Hops',
             company = 'Willie the Boatman',
             quantity = 4,
@@ -36,18 +37,18 @@ def create_inventory():
             unit = 'Keg',
             cost_price = 400
         ),
-        Stock_item(
+        Stock(
             item_name = 'Pash The Magic Dragon',
             company = 'Batch Brewing Company',
             quantity = 40,
             item_type =  'Beer',
             item_type_category = 'Sour Beer',
-            unit = 'can',
+            unit = 'Can',
             cost_price = 5.80
         )
 ]
 
-    db.session.query(Stock_item).delete()
+    db.session.query(Stock).delete()
     db.session.add_all(stock)
     db.session.commit()
 
