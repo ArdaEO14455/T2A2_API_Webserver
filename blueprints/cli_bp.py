@@ -28,8 +28,8 @@ def create_inventory():
         volume=375, 
         alcohol_content=4
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=60, cost_price=5)
-    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=9)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=60, cost_price=5)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=9)
 
     item = Item(
         name='Nectar',
@@ -40,8 +40,8 @@ def create_inventory():
         volume=4000, 
         alcohol_content=5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=5, cost_price=350)
-    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=5, cost_price=350)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Pink Gallah',
@@ -52,8 +52,8 @@ def create_inventory():
         volume=375, 
         alcohol_content=5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=60, cost_price=5)
-    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=0)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=60, cost_price=5)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=0)
 
 
     item = Item(
@@ -65,8 +65,8 @@ def create_inventory():
         volume=500, 
         alcohol_content=14
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=25)
-    add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=50)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=20, cost_price=25)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=50)
 
 
     item = Item(
@@ -78,8 +78,8 @@ def create_inventory():
         volume=500, 
         alcohol_content=14
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=16)
-    add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=55)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=20, cost_price=16)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=55)
 
 
     item = Item(
@@ -91,8 +91,8 @@ def create_inventory():
         volume=500, 
         alcohol_content=14
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=60)
-    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=45)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=20, cost_price=60)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=45)
 
 
     item = Item(
@@ -104,8 +104,8 @@ def create_inventory():
         volume=1000, 
         alcohol_content=37.5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
-    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
+    add_to_stock(item, name=item.name, category=item.category,  type=item.type, quantity=20, cost_price=20)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Poor Toms Strawberry Gin',
@@ -116,8 +116,8 @@ def create_inventory():
         volume=1000, 
         alcohol_content=37.5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
-    add_to_bar(item, name=item.name, type=item.type, quantity=1, target_quantity=4, bar_price=0)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=20, cost_price=20)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=1, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Bloody Shiraz Gin',
@@ -128,10 +128,55 @@ def create_inventory():
         volume=1000, 
         alcohol_content=37.5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
-    add_to_bar(item, name=item.name, type=item.type, quantity=4, target_quantity=4, bar_price=0)
+    add_to_stock(item, name=item.name, category=item.category, type=item.type, quantity=20, cost_price=20)
+    # add_to_bar(item, name=item.name, type=item.type, quantity=4, target_quantity=4, bar_price=0)
 
     print('Example Stock Created')
+
+
+@cli_bp.cli.command('bar_inventory')
+def create_bar_inventory():
+    stock_items = db.session.query(Stock).all()
+    for stock_item in stock_items: 
+        bar_item = Bar.query.filter_by(name=stock_item.name, category=stock_item.category, type=stock_item.type).first() #check to see if the item is already in the stock table
+        if bar_item is None:
+            if stock_item.type == 'Wine':
+                stock_item = Bar(
+                bar_item= stock_item,
+                name= stock_item.name,
+                type = stock_item.type,
+                quantity = 10,
+                target_quantity = 12,
+                bar_price = 50,
+                )
+            elif stock_item.category == 'Beer':
+                stock_item = Bar(
+                bar_item= stock_item,
+                name= stock_item.name,
+                type = stock_item.type,
+                quantity = 18,
+                target_quantity = 20,
+                bar_price = 10,
+                )
+            elif stock_item.category == 'Spirit':
+                stock_item = Bar(
+                bar_item= stock_item,
+                name= stock_item.name,
+                type = stock_item.type,
+                quantity = 2,
+                target_quantity = 4,
+                bar_price = 0
+                )
+            
+            db.session.add(bar_item)
+            db.session.commit()
+
+                #add_to_stocklist(stock_item.bar_item, name=stock_item.name, type=stock_item.type, quantity=stock_item.quantity)
+    print('Bar Inventory Created')
+
+
+
+#Create Stocklist Command
 
 @cli_bp.cli.command('stock_list')
 def create_stocklist():

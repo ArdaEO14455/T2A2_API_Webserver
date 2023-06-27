@@ -13,6 +13,7 @@ class Stock(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False)
 
     name = db.Column(db.String())
+    category = db.Column(db.String())
     type = db.Column(db.String())
 
     quantity = db.Column(db.Integer)

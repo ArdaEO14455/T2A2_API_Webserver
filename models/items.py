@@ -20,10 +20,11 @@ class Item(db.Model):
     volume = db.Column(db.Integer)
     alcohol_content = db.Column(db.Float)
 
-def add_to_stock(self, name, type, quantity, cost_price): #function to add items from Item table to Stock table
+def add_to_stock(self, name, category, type, quantity, cost_price): #function to add items from Item table to Stock table
     stock_item = Stock(
          item=self, 
          name=name, 
+         category=category,
          type=type, 
          quantity=quantity, 
          cost_price=cost_price)
