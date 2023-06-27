@@ -135,15 +135,15 @@ def create_inventory():
 
 @cli_bp.cli.command('stock_list')
 def create_stocklist():
-    bar_items = db.session.query(Bar).all()
-    for item in bar_items:
-        stock_item = Stock_list.query.filter_by(name=item.name, type=item.type).first()
+    bar_items = db.session.query(Bar).all() #Query the Bar table and iterate over rows
+    for item in bar_items: 
+        stock_item = Stock_list.query.filter_by(name=item.name, type=item.type).first() #check to see if the item is already in the stock table
         if stock_item is None:
             stock_item = Stock_list(
             bar_item= item,
             name= item.name,
             type = item.type,
-            quantity= (item.target_quantity - item.quantity)
+            quantity= (item.target_quantity - item.quantity) #determine how many of each item is needed to reach target quantity
             )
         if stock_item.quantity > 0:
                 
@@ -153,3 +153,16 @@ def create_stocklist():
 
                 #add_to_stocklist(stock_item.bar_item, name=stock_item.name, type=stock_item.type, quantity=stock_item.quantity)
     print('Stocklist Created')
+
+@cli_bp.cli.command('commit_stocktake')
+def commit_stocktake():
+    stock_list_items = db.session.query(Stock_list).all() #Query the Stock_List table and iterate over the items
+    for stock_list_item in stock_list_items:
+        bar_item = Bar.query.filter_by(bar_id=stock_list_item.bar_id).first() #Query Bar table for matching stock-list items based on matching bar ID
+        bar_item.quantity += stock_list_item.quantity #Add stock-list item quantity to matching bar item quantity
+
+        stock_item = Stock.query.filter_by(item_id=stock_list_item.bar_item.item_id).first() #Query Stock table for matching stock-list items based on matching stock ID
+        stock_item.quantity -= stock_list_item.quantity #Subtract stock-list item quantity from matching stock item quantity
+    
+    db.session.commit()
+    print('Stocktake Completed, Stock Updated')

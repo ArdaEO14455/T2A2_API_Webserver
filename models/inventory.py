@@ -10,7 +10,7 @@ class Stock(db.Model):
 
     stock_id = db.Column(db.Integer, primary_key=True)
 
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False)
 
     name = db.Column(db.String())
     type = db.Column(db.String())
@@ -57,27 +57,12 @@ class Stock_list(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     bar_id = db.Column(db.Integer, db.ForeignKey('bar_items.bar_id'))
-    # stock_id = db.Column(db.Integer, db.ForeignKey('stock_items.stock_id'))
 
     name = db.Column(db.Text())
     type = db.Column(db.String())
     quantity = db.Column(db.Integer)
 
     bar_item = db.relationship('Bar', backref=db.backref('stock_list', lazy='dynamic'))
-    # available_stock = db.relationship('Stock', backref=db.backref('stock_list', lazy='dynamic'))
-
-
-# def add_to_stocklist(self, name, type, quantity):
-    
-#         stocklist_item = Stock_list(
-#         bar_item=self,
-#         name=name,
-#         type=type,
-#         quantity=quantity)
-    
-#         db.session.add(stocklist_item)
-#         db.session.commit()
-
     
 
 

@@ -20,7 +20,7 @@ class Item(db.Model):
     volume = db.Column(db.Integer)
     alcohol_content = db.Column(db.Float)
 
-def add_to_stock(self, name, type, quantity, cost_price):
+def add_to_stock(self, name, type, quantity, cost_price): #function to add items from Item table to Stock table
     stock_item = Stock(
          item=self, 
          name=name, 
@@ -30,7 +30,7 @@ def add_to_stock(self, name, type, quantity, cost_price):
     db.session.add(stock_item)
     db.session.commit()
 
-def add_to_bar(self, name, type, quantity, target_quantity, bar_price):
+def add_to_bar(self, name, type, quantity, target_quantity, bar_price): #function to add items from Item table to bar table
     bar_items = Bar(
          item=self, 
          name=name, 
