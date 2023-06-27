@@ -17,10 +17,32 @@ def clear_db():
 
 @cli_bp.cli.command('create_inventory')
 def create_inventory():
+    # items = [
+    #     Item(
+    #         name="nectar",
+    #         category = 'Beer',
+    #         type="NEIPA" ,
+    #         company="WTB",
+    #         unit = 'Can'
+    #     ),
+    #     Item (
+    #         name='Nectar of the Hops',
+    #         category = 'Beer',
+    #         type='New England IPA' ,
+    #         company='Willie the Boatman',
+    #         unit = 'Keg'
+    #     ),
+    #     Item(
+    #         name='Pash The Magic Dragon',
+    #         category = 'Beer',
+    #         type='Sour Beer',
+    #         company='Batch Brewing Company',
+    #         unit = 'Can'
+    #     )
+    # ]
     stock = [
         Stock(
-
-            item_name="nectar",
+            name="nectar",
             company="WTB",
             quantity=5 ,
             item_type="Beer" ,
@@ -28,24 +50,24 @@ def create_inventory():
             unit="Can",
             cost_price=5
         ),
-        Stock(
-            item_name = 'Nectar of the Hops',
-            company = 'Willie the Boatman',
-            quantity = 4,
-            item_type =  'Beer',
-            item_type_category = 'New England IPA',
-            unit = 'Keg',
-            cost_price = 400
-        ),
-        Stock(
-            item_name = 'Pash The Magic Dragon',
-            company = 'Batch Brewing Company',
-            quantity = 40,
-            item_type =  'Beer',
-            item_type_category = 'Sour Beer',
-            unit = 'Can',
-            cost_price = 5.80
-        )
+        # Stock(
+        #     name = 'Nectar of the Hops',
+        #     company = 'Willie the Boatman',
+        #     quantity = 4,
+        #     item_type =  'Beer',
+        #     item_type_category = 'New England IPA',
+        #     unit = 'Keg',
+        #     cost_price = 400
+        # ),
+        # Stock(
+        #     name = 'Pash The Magic Dragon',
+        #     company = 'Batch Brewing Company',
+        #     quantity = 40,
+        #     item_type = 'Beer',
+        #     item_type_category = 'Sour Beer',
+        #     unit = 'Can',
+        #     cost_price = 5.80
+        # )
 ]
 
     db.session.query(Stock).delete()
@@ -64,3 +86,19 @@ def create_inventory():
     # db.session.commit()
 
     print("Inventory Created")
+
+
+@cli_bp.cli.command('create_item')
+def create_db():
+    item = Item(
+        name='Pash',
+        category='Beer', 
+        type='Sour', 
+        company='coca-cola', 
+        unit='bottle', 
+        volume=500, 
+        alcohol_content=0
+    )
+    add_to_stock(item, quantity=10, cost_price=50)
+    print('Item Added')
+

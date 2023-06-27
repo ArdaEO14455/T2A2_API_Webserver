@@ -1,4 +1,5 @@
 from init import db, ma
+from models.inventory import *
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Regexp, ValidationError
 
@@ -12,13 +13,19 @@ class Item(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.relationship('Stock', back_populates='item_name')
+    # name = db.relationship('Stock', back_populates='item_name')
+    name = db.Column(db.Text())
     category = db.Column(db.Text())
     type = db.Column(db.Text()) # db.relationship('Beer_type')
     company = db.Column(db.Text)
     unit = db.Column(db.Text)
     volume = db.Column(db.Integer)
     alcohol_content = db.Column(db.Float)
+
+def add_to_stock(self, quantity, cost_price):
+    stock_item = Stock(item=self, quantity=quantity, cost_price=cost_price)
+    db.session.add(stock_item)
+    db.session.commit()
 
 class ItemSchema(ma.Schema):
     name = fields.String(required=True, validate=(Regexp('^[a-zA-Z0-9]+$', error='Special Characters (#,$,@ etc) are not allowed')))

@@ -41,21 +41,27 @@ class Stock(db.Model):
     __tablename__ = "stock_items"
 
     stock_id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
 
-    item_name = db.Column(db.Text(), db.relationship('Item', back_populates='name', cascade='all, delete'))
-    company = db.Column(db.Text())
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
+    
+    # name = db.Column(db.Text())
+    # company = db.Column(db.Text())
     quantity = db.Column(db.Integer)
-    item_type = db.Column(db.Text())
-    item_type_category = db.Column(db.Text()) 
-    unit = db.Column(db.Text())
-    cost_price_ = db.Column(db.Integer)
+    # item_type = db.Column(db.Text())
+    # item_type_category = db.Column(db.Text()) 
+    # unit = db.Column(db.Text())
+    cost_price = db.Column(db.Integer)
+
+    item = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
+
+
+
 
 #Stock Schema
 class StockSchema(ma.Schema):
     quantity = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
     class Meta:
-        fields = ('item_name', 'company', 'quantity', 'item_type', 'item_type_category', 'unit', 'cost_price')
+        fields = ('name', 'company', 'quantity', 'item_type', 'item_type_category', 'unit', 'cost_price')
 
 
     
