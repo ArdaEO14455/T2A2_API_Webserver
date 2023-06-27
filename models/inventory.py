@@ -43,14 +43,13 @@ class Stock(db.Model):
     stock_id = db.Column(db.Integer, primary_key=True)
 
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
+
+    name = db.Column(db.String())
+    type = db.Column(db.String())
     
-    # name = db.Column(db.Text())
-    # company = db.Column(db.Text())
     quantity = db.Column(db.Integer)
-    # item_type = db.Column(db.Text())
-    # item_type_category = db.Column(db.Text()) 
-    # unit = db.Column(db.Text())
     cost_price = db.Column(db.Integer)
+
 
     item = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
 

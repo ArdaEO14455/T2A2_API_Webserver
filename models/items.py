@@ -16,14 +16,19 @@ class Item(db.Model):
     # name = db.relationship('Stock', back_populates='item_name')
     name = db.Column(db.Text())
     category = db.Column(db.Text())
-    type = db.Column(db.Text()) # db.relationship('Beer_type')
+    type = db.Column(db.Text())
     company = db.Column(db.Text)
     unit = db.Column(db.Text)
     volume = db.Column(db.Integer)
     alcohol_content = db.Column(db.Float)
 
-def add_to_stock(self, quantity, cost_price):
-    stock_item = Stock(item=self, quantity=quantity, cost_price=cost_price)
+def add_to_stock(self, name, type, quantity, cost_price):
+    stock_item = Stock(
+         item=self, 
+         name=name, 
+         type=type, 
+         quantity=quantity, 
+         cost_price=cost_price)
     db.session.add(stock_item)
     db.session.commit()
 
