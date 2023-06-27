@@ -3,6 +3,7 @@ from models.inventory import *
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Regexp, ValidationError
 
+
 VALID_CATEGORIES = ['Beer', 'Wine', 'Spirit']
 VALID_UNITS = ['Can', 'Bottle', 'Keg']
 

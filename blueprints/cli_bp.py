@@ -3,6 +3,7 @@ from init import db
 from models.inventory import *
 from models.items import *
 
+
 cli_bp = Blueprint('db', __name__)
 
 @cli_bp.cli.command('create')
@@ -128,18 +129,27 @@ def create_inventory():
         alcohol_content=37.5
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
-    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
+    add_to_bar(item, name=item.name, type=item.type, quantity=4, target_quantity=4, bar_price=0)
 
     print('Example Stock Created')
 
 @cli_bp.cli.command('stock_list')
-def stocklist():
+def create_stocklist():
     bar_items = db.session.query(Bar).all()
     for item in bar_items:
-        stock_item = Stock_list(
-        bar_item= item,
-        name= item.name,
-        quantity= (item.target_quantity - item.quantity)
-        )
-        add_to_stocklist(stock_item.bar_item, name=stock_item.name, quantity=stock_item.quantity)
+        stock_item = Stock_list.query.filter_by(name=item.name, type=item.type).first()
+        if stock_item is None:
+            stock_item = Stock_list(
+            bar_item= item,
+            name= item.name,
+            type = item.type,
+            quantity= (item.target_quantity - item.quantity)
+            )
+        if stock_item.quantity > 0:
+                
+                db.session.close()
+                db.session.add(stock_item)
+                db.session.commit()
+
+                #add_to_stocklist(stock_item.bar_item, name=stock_item.name, type=stock_item.type, quantity=stock_item.quantity)
     print('Stocklist Created')

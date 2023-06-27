@@ -50,6 +50,7 @@ class Bar(db.Model):
 
  
 
+#Stock List Model
 class Stock_list(db.Model):
     __tablename__ = 'stock_list'
 
@@ -59,19 +60,23 @@ class Stock_list(db.Model):
     # stock_id = db.Column(db.Integer, db.ForeignKey('stock_items.stock_id'))
 
     name = db.Column(db.Text())
+    type = db.Column(db.String())
     quantity = db.Column(db.Integer)
 
     bar_item = db.relationship('Bar', backref=db.backref('stock_list', lazy='dynamic'))
     # available_stock = db.relationship('Stock', backref=db.backref('stock_list', lazy='dynamic'))
 
 
-def add_to_stocklist(bar, name, quantity):
-    stocklist_item = Stock_list(
-        bar_item=bar,
-        name=name,
-        quantity=quantity)
-    db.session.add(stocklist_item)
-    db.session.commit()
+# def add_to_stocklist(self, name, type, quantity):
+    
+#         stocklist_item = Stock_list(
+#         bar_item=self,
+#         name=name,
+#         type=type,
+#         quantity=quantity)
+    
+#         db.session.add(stocklist_item)
+#         db.session.commit()
 
     
 
