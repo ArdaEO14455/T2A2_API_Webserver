@@ -6,14 +6,11 @@ from marshmallow.validate import Regexp, ValidationError
 VALID_CATEGORIES = ['Beer', 'Wine', 'Spirit']
 VALID_UNITS = ['Can', 'Bottle', 'Keg']
 
-#Beer Information
-
 class Item(db.Model):
     __tablename__ = 'items'
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # name = db.relationship('Stock', back_populates='item_name')
     name = db.Column(db.Text())
     category = db.Column(db.Text())
     type = db.Column(db.Text())
@@ -30,6 +27,17 @@ def add_to_stock(self, name, type, quantity, cost_price):
          quantity=quantity, 
          cost_price=cost_price)
     db.session.add(stock_item)
+    db.session.commit()
+
+def add_to_bar(self, name, type, quantity, target_quantity, bar_price):
+    bar_items = Bar(
+         item=self, 
+         name=name, 
+         type=type, 
+         quantity=quantity,
+         target_quantity=target_quantity, 
+         bar_price=bar_price)
+    db.session.add(bar_items)
     db.session.commit()
 
 class ItemSchema(ma.Schema):

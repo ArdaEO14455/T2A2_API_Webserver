@@ -14,52 +14,9 @@ def create_db():
 @cli_bp.cli.command('clear')
 def clear_db():
     db.drop_all()
+    print('All Tables Dropped')
 
-@cli_bp.cli.command('create_inventory')
-def create_inventory():
-    # items = [
-    #     Item(
-    #         name="nectar",
-    #         category = 'Beer',
-    #         type="NEIPA" ,
-    #         company="WTB",
-    #         unit = 'Can'
-    #     ),
-    #     Item (
-    #         name='Nectar of the Hops',
-    #         category = 'Beer',
-    #         type='New England IPA' ,
-    #         company='Willie the Boatman',
-    #         unit = 'Keg'
-    #     ),
-    #     Item(
-    #         name='Pash The Magic Dragon',
-    #         category = 'Beer',
-    #         type='Sour Beer',
-    #         company='Batch Brewing Company',
-    #         unit = 'Can'
-    #     )
-    # ]
-    stock = [
-        Stock(
-            name="nectar",
-            company="WTB",
-            quantity=5 ,
-            item_type="Beer" ,
-            item_type_category="NEIPA" ,
-            unit="Can",
-            cost_price=5
-        ),
-]
-
-    db.session.query(Stock).delete()
-    db.session.add_all(stock)
-    db.session.commit()
-
-    print("Inventory Created")
-
-
-@cli_bp.cli.command('create_stock_A')
+@cli_bp.cli.command('generate_stock')
 def create_inventory():
     item = Item(
         name='Pash',
@@ -71,17 +28,19 @@ def create_inventory():
         alcohol_content=4
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=60, cost_price=5)
+    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=9)
 
     item = Item(
         name='Nectar',
         category='Beer', 
         type='NEIPA', 
         company='WTB', 
-        unit='can', 
-        volume=375, 
+        unit='Keg', 
+        volume=4000, 
         alcohol_content=5
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=60, cost_price=5)
+    add_to_stock(item, name=item.name, type=item.type, quantity=5, cost_price=350)
+    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Pink Gallah',
@@ -93,6 +52,8 @@ def create_inventory():
         alcohol_content=5
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=60, cost_price=5)
+    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=0)
+
 
     item = Item(
         name='Little Giant',
@@ -104,6 +65,8 @@ def create_inventory():
         alcohol_content=14
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=25)
+    add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=50)
+
 
     item = Item(
         name='Sagitarious',
@@ -115,6 +78,8 @@ def create_inventory():
         alcohol_content=14
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=16)
+    add_to_bar(item, name=item.name, type=item.type, quantity=10, target_quantity=12, bar_price=55)
+
 
     item = Item(
         name='Break Free',
@@ -125,7 +90,9 @@ def create_inventory():
         volume=500, 
         alcohol_content=14
     )
-    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
+    add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=60)
+    add_to_bar(item, name=item.name, type=item.type, quantity=8, target_quantity=10, bar_price=45)
+
 
     item = Item(
         name='Smirnoff Vodka',
@@ -137,6 +104,7 @@ def create_inventory():
         alcohol_content=37.5
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
+    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Poor Toms Strawberry Gin',
@@ -148,6 +116,7 @@ def create_inventory():
         alcohol_content=37.5
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
+    add_to_bar(item, name=item.name, type=item.type, quantity=1, target_quantity=4, bar_price=0)
 
     item = Item(
         name='Bloody Shiraz Gin',
@@ -159,6 +128,18 @@ def create_inventory():
         alcohol_content=37.5
     )
     add_to_stock(item, name=item.name, type=item.type, quantity=20, cost_price=20)
+    add_to_bar(item, name=item.name, type=item.type, quantity=2, target_quantity=4, bar_price=0)
 
     print('Example Stock Created')
 
+@cli_bp.cli.command('stock_list')
+def stocklist():
+    bar_items = db.session.query(Bar).all()
+    for item in bar_items:
+        stock_item = Stock_list(
+        bar_item= item,
+        name= item.name,
+        quantity= (item.target_quantity - item.quantity)
+        )
+        add_to_stocklist(stock_item.bar_item, name=stock_item.name, quantity=stock_item.quantity)
+    print('Stocklist Created')
