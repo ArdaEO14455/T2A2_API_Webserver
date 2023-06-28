@@ -3,8 +3,7 @@ from os import environ
 from init import db, ma
 from blueprints.cli_bp import cli_bp
 from blueprints.auth_bp import auth_bp
-from blueprints.stock_bp import stock_bp
-from init import db #ma
+from init import db, ma
 
 
 def setup():
@@ -17,7 +16,7 @@ def setup():
 
     app.register_blueprint(cli_bp)
     app.register_blueprint(auth_bp)
-    app.register_blueprint(stock_bp)
+    # app.register_blueprint(stock_bp)
 
     if __name__ == '__main__':
         app.run(debug=True)

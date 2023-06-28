@@ -1,7 +1,7 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Regexp
-# from items import *
+from models.items import ItemSchema
 
 #Stock Model
 
@@ -16,16 +16,17 @@ class Stock(db.Model):
     category = db.Column(db.String())
     type = db.Column(db.String())
 
-    quantity = db.Column(db.Integer)
+    available_stock = db.Column(db.Integer)
     cost_price = db.Column(db.Integer)
 
 
     item = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
 
 
-# #Stock Schema
-# class StockSchema(ma.Schema):
-#     item = fields.Nested(ItemSchema)    
-#     quantity = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
-#     class Meta:
-#         fields = ('name', 'company', 'quantity', 'item_type', 'item_type_category', 'unit', 'cost_price')
+#Stock Schema
+class StockSchema(ma.Schema):
+    item = fields.Nested(ItemSchema, exclude=['alcohol_content'])
+    available_stock = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
+    class Meta:
+        fields = ('item', 'available_stock', 'cost_price')
+        ordered = True

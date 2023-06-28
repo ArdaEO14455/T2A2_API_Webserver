@@ -1,7 +1,7 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
-# from stock import Stock
+from models.items import ItemSchema
 
 
 #Bar Model
@@ -22,5 +22,12 @@ class Bar(db.Model):
     item = db.relationship('Stock', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
 
 
- 
+class BarSchema(ma.Schema):
+    item = fields.Nested(ItemSchema, exclude=['alcohol_content'])
+    quantity = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
+    target_quantity = fields.Integer(required=True, validate=(Regexp('^[1-9]+$', error='Invalid quantity')))
+    
+    class Meta:
+        fields = ('item', 'quantity', 'target_quantity')
+        ordered = True
 

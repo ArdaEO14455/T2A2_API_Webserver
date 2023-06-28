@@ -1,7 +1,8 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
-# from bar import *
+# from models.items import ItemSchema
+from models.items import ItemSchema
 
 
 #Stock List Model
@@ -13,8 +14,19 @@ class Stock_list(db.Model):
     bar_id = db.Column(db.Integer, db.ForeignKey('bar_items.bar_id'))
 
     name = db.Column(db.Text())
+    category = db.Column(db.Text())
     type = db.Column(db.String())
-    quantity = db.Column(db.Integer)
+    quantity_needed = db.Column(db.Integer)
 
     bar_item = db.relationship('Bar', backref=db.backref('stock_list', lazy='dynamic'))
+
+
+class Stock_list_Schema(ma.Schema):
+    name = fields.String()
+    category = fields.String()
+    type = fields.String()
+    quantity_needed = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
+    
+    class Meta:
+        ordered = True
     

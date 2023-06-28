@@ -1,6 +1,4 @@
-from flask import Blueprint
-from init import db
-from models.inventory import *
-from models.items import *
+# from flask import Blueprint
+# from models.items import *
 
-stock_bp = Blueprint('stock', __name__)
+# stock_bp = Blueprint('stock', __name__)

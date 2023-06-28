@@ -32,12 +32,12 @@ def create_inventory():
         category='Beer', 
         type='Sour', 
         company='Batch Brewing Company', 
-        unit='can', 
+        unit='Can', 
         volume=375, 
         alcohol_content=4
     ),
     Item(
-        name='Nectar',
+        name='Nectar of the Hops',
         category='Beer', 
         type='NEIPA', 
         company='WTB', 
@@ -50,7 +50,7 @@ def create_inventory():
         category='Beer', 
         type='Pink Lemonade Sour Ale', 
         company='Grifter Brewery', 
-        unit='can', 
+        unit='Can', 
         volume=375, 
         alcohol_content=5
     ),
@@ -128,7 +128,7 @@ def add_to_stock():
             name = item.name,
             category = item.category,
             type = item.type,
-            quantity = 20,
+            available_stock = 20,
             cost_price = 0
             )
         db.session.add(stock_item)
@@ -190,11 +190,12 @@ def create_stocklist():
         if stock_item is None:
             stock_item = Stock_list(
             bar_item = item,
+            category = item.category,
             name= item.name,
             type = item.type,
-            quantity= (item.target_quantity - item.quantity) #determine how many of each item is needed to reach target quantity
+            quantity_needed= (item.target_quantity - item.quantity) #determine how many of each item is needed to reach target quantity
             )
-        if stock_item.quantity > 0:
+        if stock_item.quantity_needed > 0:
                 
                 db.session.close()
                 db.session.add(stock_item)
@@ -209,10 +210,20 @@ def commit_stocktake():
     stock_list_items = db.session.query(Stock_list).all() #Query the Stock_List table and iterate over the items
     for stock_list_item in stock_list_items:
         bar_item = Bar.query.filter_by(name=stock_list_item.name).first() #Query Bar table for matching stock-list items based on matching name
-        bar_item.quantity += stock_list_item.quantity #Add stock-list item quantity to matching bar item quantity
+        bar_item.quantity += stock_list_item.quantity_needed #Add stock-list item quantity to matching bar item quantity
 
         stock_item = Stock.query.filter_by(name=stock_list_item.name).first() #Query Stock table for matching stock-list items based on matching stock ID
-        stock_item.quantity -= stock_list_item.quantity #Subtract stock-list item quantity from matching stock item quantity based on name
+        stock_item.quantity -= stock_list_item.quantity_needed #Subtract stock-list item quantity from matching stock item quantity based on name
     
     db.session.commit()
     print('Stocktake Completed, Stock Updated')
+
+
+# @cli_bp.cli.command('test_all')
+# def test_all():
+#     create_db()
+#     create_inventory()
+#     add_to_stock()
+#     create_bar_inventory()
+#     create_stocklist()
+    
