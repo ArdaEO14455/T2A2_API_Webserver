@@ -34,19 +34,22 @@ class StockSchema(ma.Schema):
 
 #Bar Model
 class Bar(db.Model):
-    __tablename__ = "bar_items"
+    __tablename__ = 'bar_items'
 
     bar_id = db.Column(db.Integer, primary_key=True)
 
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
+    # item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) 
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock_items.stock_id'), nullable = False) 
 
     name = db.Column(db.String())
     type = db.Column(db.String())
+    category = db.Column(db.String())
     quantity = db.Column(db.Integer)
     target_quantity = db.Column(db.Integer)
     bar_price = db.Column(db.Integer)
 
-    item = db.relationship('Item', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
+    #item = db.relationship('Item', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
+    item = db.relationship('Stock', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
 
 
  
