@@ -1,7 +1,10 @@
 from flask import Blueprint
 from init import db
-from models.inventory import *
-from models.items import *
+# from models.inventory import *
+from models.items import Item
+from models.stock import Stock
+from models.bar import Bar
+from models.stock_list import Stock_list
 
 
 cli_bp = Blueprint('db', __name__)
@@ -114,7 +117,7 @@ def create_inventory():
 
 #add items from items table to stock table
 
-@cli_bp.cli.command('add_to_stock')
+@cli_bp.cli.command('add_stock')
 def add_to_stock():
     items = db.session.query(Item).all() #Query the Bar table and iterate over rows
     for item in items: 
