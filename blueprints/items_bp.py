@@ -73,7 +73,7 @@ def delete_item(item_id):
     
 
 #Update an item
-@items_bp.route('/<int:item_id>', methods=['PUT', 'PATCH'])
+@items_bp.route('/<int:item_id>', methods=['PATCH'])
 def update_item(item_id):
   stmt = db.select(Item).filter_by(id=item_id)
   item = db.session.scalar(stmt)
