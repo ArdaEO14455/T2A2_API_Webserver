@@ -25,8 +25,10 @@ class Stock(db.Model):
 
 #Stock Schema
 class StockSchema(ma.Schema):
-    item = fields.Nested(ItemSchema)#, exclude=['alcohol_content'])
-    available_stock = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
+    item = fields.Nested(ItemSchema, exclude=['name'])
+    # name = fields.String()
+    available_stock = fields.Integer(required=True)
+    cost_price = fields.Integer()
     class Meta:
-        fields = ('item', 'available_stock', 'cost_price')
+        fields = ( 'name', 'item', 'available_stock', 'cost_price')
         ordered = True

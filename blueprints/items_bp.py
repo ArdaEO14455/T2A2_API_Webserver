@@ -1,8 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from models.items import *
 from models.stock import *
 from models.bar import *
 from models.stock_list import *
+from psycopg2 import IntegrityError
 
 items_bp = Blueprint('items', __name__, url_prefix='/items')
 
@@ -16,19 +17,34 @@ def items():
 
 @items_bp.route('/add', methods=['POST'])
 def add_stock():
-    #Load POST data via the Schema
-    item_details = ItemSchema().load(request.json)
-    #Create new item instance
-    item = Item(
-        name = item_details['name'],
-        category = item_details['category'],
-        type = item_details['type'],
-        company = item_details['company'],
-        unit = item_details['unit'],
-        volume = item_details['volume'],
-    )
-    #add and commit the new item to the session
-    db.session.add(item)
-    db.session.commit()
+    try:
+        #Load POST data via the Schema
+        item_details = ItemSchema().load(request.json)
+        #Create new item instance
+        item = Item(
+            name = item_details['name'],
+            category = item_details['category'],
+            type = item_details['type'],
+            company = item_details['company'],
+            unit = item_details['unit'],
+            volume = item_details['volume'],
+        )
+        #add and commit the new item to the session
+        db.session.add(item)
+        db.session.commit()
 
-    return ItemSchema().dump(item), 201
+        return ItemSchema().dump(item), 201
+    except:
+        IntegrityError
+        return jsonify({'error': 'item with that name already exists'}), 409 #Resource already exists 
+
+#Example Input:
+
+#{
+#     "name": "Little Giant",
+#     "category": "wine",
+#     "type": "Shiraz",
+#     "company": "Unknown",
+#     "unit": "Bottle",
+#     "volume": 500
+#}

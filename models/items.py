@@ -1,7 +1,6 @@
 from init import db, ma
-# from models.inventory import *
-from marshmallow import fields, validates_schema, validates
-from marshmallow.validate import Regexp, ValidationError, OneOf
+from marshmallow import fields, validates_schema
+from marshmallow.validate import Regexp, ValidationError
 
 
 VALID_CATEGORIES = ['Beer', 'Wine', 'Spirit']
@@ -12,7 +11,7 @@ class Item(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.String())
+    name = db.Column(db.String(), unique=True)
     category = db.Column(db.String())
     type = db.Column(db.String())
     company = db.Column(db.String())
@@ -44,6 +43,15 @@ class ItemSchema(ma.Schema):
             if len(unit) == 0:
                  raise ValidationError(f'Invalid Unit, must be one of the following: {VALID_CATEGORIES}')
             data['unit'] = unit[0]
+
+    @validates_schema
+    def validate_category(self, data, **kwargs):
+            
+            category = [x for x in VALID_CATEGORIES if x.upper() == data['category'].upper()]
+            if len(category) == 0:
+                 raise ValidationError(f'Category must be filled in with one of: {VALID_CATEGORIES}')
+            data['category'] = category[0]
+    
 
     class Meta:
         fields = ('name', 'category', 'type', 'company', 'unit', 'volume', 'alcohol_content')
