@@ -30,5 +30,5 @@ class StockSchema(ma.Schema):
     available_stock = fields.Integer(required=True)
     cost_price = fields.Integer()
     class Meta:
-        fields = ( 'name', 'item', 'available_stock', 'cost_price')
+        fields = ('name', 'item', 'available_stock', 'cost_price')
         ordered = True

@@ -35,16 +35,81 @@ def add_stock():
 
         return ItemSchema().dump(item), 201
     except:
-        IntegrityError
+        TypeError #Integrity Error
         return jsonify({'error': 'item with that name already exists'}), 409 #Resource already exists 
 
 #Example Input:
 
-#{
+# {
 #     "name": "Little Giant",
 #     "category": "wine",
 #     "type": "Shiraz",
 #     "company": "Unknown",
 #     "unit": "Bottle",
 #     "volume": 500
-#}
+# }
+
+#Find an item:
+@items_bp.route('/<int:item_id>')
+def one_card(item_id):
+  stmt = db.select(Item).filter_by(id=item_id)
+  item = db.session.scalar(stmt)
+  if item:
+    return ItemSchema().dump(item)
+  else:
+    return {'error': 'Card not found'}, 404
+
+#Delete an item:
+@items_bp.route('/<int:item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    stmt = db.select(Item).filter_by(id=item_id)
+    item = db.session.scalar(stmt)
+    if item:
+        db.session.delete(item)
+        db.session.commit()
+        return {}, 200
+    else:
+        return{'error': 'Item does not exist'}, 404
+    
+
+#Update an item
+@items_bp.route('/<int:item_id>', methods=['PUT', 'PATCH'])
+def update_item(item_id):
+  stmt = db.select(Item).filter_by(id=item_id)
+  item = db.session.scalar(stmt)
+  item_info = ItemSchema().load(request.json)
+  if item:
+    item.name = item_info.get('name', item.name)
+    item.category = item_info.get('category', item.category)
+    item.type = item_info.get('status', item.type)
+    item.company = item_info.get('company', item.company)
+    item.unit = item_info.get('unit', item.unit)
+    item.volume = item_info.get('volume', item.volume)
+    db.session.commit()
+    return ItemSchema().dump(item)
+  else:
+    return {'error': 'item not found'}, 404
+  
+  
+#Add all items from the Item Table to the Stock Table, with available-quantities set to 10
+@items_bp.route('/stock_all', methods=['POST'])
+def add_all_to_stock():
+    items = Item.query.all()
+    
+    for item in items:
+        stock = Stock(
+            item_id = item.id,
+            name = item.name,
+            category = item.category,
+            type = item.type,
+            available_stock = 10,
+            cost_price = 0
+        )
+        
+        db.session.add(stock)
+    
+    db.session.commit()
+    
+    return jsonify({'message': 'All items added to stock'}), 201
+
+

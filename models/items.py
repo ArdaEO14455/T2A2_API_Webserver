@@ -12,11 +12,11 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     name = db.Column(db.String(), unique=True)
-    category = db.Column(db.String())
-    type = db.Column(db.String())
+    category = db.Column(db.String()) #Beer, Wine, Spirit as basic categories. Also distinction is necessary for cli_commands for example stock generation & testing functionality
+    type = db.Column(db.String()) #sub-category of the above category - Pale ale, Pinot Noir, etc.
     company = db.Column(db.String())
-    unit = db.Column(db.String())
-    volume = db.Column(db.Integer)
+    unit = db.Column(db.String()) #Distinguish container for stock item, as distinguishing between a can of beer and a keg is important
+    volume = db.Column(db.Integer) #Fluff parameter to add some additional information, not crucial for functionality
 
 
 class ItemSchema(ma.Schema):
@@ -54,6 +54,6 @@ class ItemSchema(ma.Schema):
     
 
     class Meta:
-        fields = ('name', 'category', 'type', 'company', 'unit', 'volume', 'alcohol_content')
+        fields = ('id', 'name', 'category', 'type', 'company', 'unit', 'volume', 'alcohol_content')
         ordered = True
 

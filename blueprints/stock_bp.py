@@ -4,14 +4,11 @@ from models.stock import Stock, StockSchema
 from models.items import Item, ItemSchema
 from psycopg2 import IntegrityError
 
-
-
-
 stock_bp = Blueprint('stock', __name__, url_prefix='/stock')
 
-# @stock_bp.route('/')
+# @cli_bp.route('/')
 # def index():
-#     return 'Hello, world'
+#     return 'Hello, Welcome to Stock Management! Here you can manually manage your stock based on quantities'
 
 @stock_bp.route('/')
 def stock():
@@ -35,6 +32,7 @@ def add_to_stock():
                 name = item.name,
                 category = item.category,
                 type = item.type,
+                
                 #available stock and its cost price need to be added individually
                 available_stock = item_details['available_stock'],
                 cost_price = item_details['cost_price']
@@ -58,3 +56,44 @@ def add_to_stock():
 #     "cost_price": 20
 #}
 
+
+#Find an item:
+@stock_bp.route('/<int:item_id>')
+def one_card(item_id):
+  stmt = db.select(Item).filter_by(id=item_id)
+  item = db.session.scalar(stmt)
+  if item:
+    return StockSchema().dump(item)
+  else:
+    return {'error': 'Card not found'}, 404
+
+# #Delete an item:
+# @items_bp.route('/<int:item_id>', methods=['DELETE'])
+# def delete_item(item_id):
+#     stmt = db.select(Item).filter_by(id=item_id)
+#     item = db.session.scalar(stmt)
+#     if item:
+#         db.session.delete(item)
+#         db.session.commit()
+#         return {}, 200
+#     else:
+#         return{'error': 'Item does not exist'}, 404
+    
+
+# #Update an item
+# @items_bp.route('/<int:item_id>', methods=['PUT', 'PATCH'])
+# def update_item(item_id):
+#   stmt = db.select(Item).filter_by(id=item_id)
+#   item = db.session.scalar(stmt)
+#   item_info = ItemSchema().load(request.json)
+#   if item:
+#     item.name = item_info.get('name', item.name)
+#     item.category = item_info.get('category', item.category)
+#     item.type = item_info.get('status', item.type)
+#     item.company = item_info.get('company', item.company)
+#     item.unit = item_info.get('unit', item.unit)
+#     item.volume = item_info.get('volume', item.volume)
+#     db.session.commit()
+#     return ItemSchema().dump(item)
+#   else:
+#     return {'error': 'item not found'}, 404
