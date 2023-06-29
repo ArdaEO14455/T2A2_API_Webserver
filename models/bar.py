@@ -24,8 +24,8 @@ class Bar(db.Model):
 
 class BarSchema(ma.Schema):
     item = fields.Nested(ItemSchema, exclude=['alcohol_content'])
-    quantity = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
-    target_quantity = fields.Integer(required=True, validate=(Regexp('^[1-9]+$', error='Invalid quantity')))
+    quantity = fields.Integer(required=True, error='Invalid quantity')
+    target_quantity = fields.Integer(required=True, error='Invalid quantity, Target Quantity must be inputted')
     
     class Meta:
         fields = ('item', 'quantity', 'target_quantity')

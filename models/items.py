@@ -12,23 +12,21 @@ class Item(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.Text())
-    category = db.Column(db.Text())
-    type = db.Column(db.Text())
-    company = db.Column(db.Text)
-    unit = db.Column(db.Text)
+    name = db.Column(db.String())
+    category = db.Column(db.String())
+    type = db.Column(db.String())
+    company = db.Column(db.String())
+    unit = db.Column(db.String())
     volume = db.Column(db.Integer)
-    alcohol_content = db.Column(db.String)
 
 
 class ItemSchema(ma.Schema):
     name = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
-    category = fields.String(load_default=(VALID_CATEGORIES[0]))
-    type = fields.String()
+    category = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
+    type = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
     company = fields.String()
-    unit = fields.String(validate=Regexp)
+    unit = fields.String()
     volume = fields.Integer()
-    alcohol_content = fields.String(validate=(Regexp('^[0-9%]+$')))
 
 
     @validates_schema
@@ -46,19 +44,6 @@ class ItemSchema(ma.Schema):
             if len(unit) == 0:
                  raise ValidationError(f'Invalid Unit, must be one of the following: {VALID_CATEGORIES}')
             data['unit'] = unit[0]
-
-    @validates_schema
-    def validate_alcohol_content(self, data, **kwargs):
-    
-        alcohol_content = data['alcohol_content']
-        if alcohol_content is not None:
-            # Append '%' symbol to the value
-            if not isinstance(alcohol_content, str):
-                alcohol_content = str(alcohol_content)
-            if not alcohol_content.endswith('%'):
-                alcohol_content += '%'
-            
-            data['alcohol_content'] = alcohol_content
 
     class Meta:
         fields = ('name', 'category', 'type', 'company', 'unit', 'volume', 'alcohol_content')

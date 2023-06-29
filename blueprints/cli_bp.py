@@ -1,6 +1,5 @@
 from flask import Blueprint
 from init import db
-# from models.inventory import *
 from models.items import Item
 from models.stock import Stock
 from models.bar import Bar
@@ -33,8 +32,7 @@ def create_inventory():
         type='Sour', 
         company='Batch Brewing Company', 
         unit='Can', 
-        volume=375, 
-        alcohol_content=4
+        volume=375 
     ),
     Item(
         name='Nectar of the Hops',
@@ -42,8 +40,7 @@ def create_inventory():
         type='NEIPA', 
         company='WTB', 
         unit='Keg', 
-        volume=4000, 
-        alcohol_content=5
+        volume=4000 
     ),
     Item(
         name='Pink Gallah',
@@ -51,8 +48,7 @@ def create_inventory():
         type='Pink Lemonade Sour Ale', 
         company='Grifter Brewery', 
         unit='Can', 
-        volume=375, 
-        alcohol_content=5
+        volume=375 
     ),
     Item(
         name='Little Giant',
@@ -60,8 +56,7 @@ def create_inventory():
         type='Shiraz', 
         company='Unknown', 
         unit='Bottle', 
-        volume=500, 
-        alcohol_content=14
+        volume=500
     ),
     Item(
         name='Sagitarious',
@@ -69,8 +64,7 @@ def create_inventory():
         type='Cabernet Sauvignon', 
         company='Twelve Signs', 
         unit='Bottle', 
-        volume=500, 
-        alcohol_content=14
+        volume=500
     ),
     Item(
         name='Break Free',
@@ -78,8 +72,7 @@ def create_inventory():
         type='Skin-On Rose', 
         company='Unknown', 
         unit='Bottle', 
-        volume=500, 
-        alcohol_content=14
+        volume=500 
     ),
     Item(
         name='Smirnoff Vodka',
@@ -87,8 +80,7 @@ def create_inventory():
         type='Vodka', 
         company='Smirnoff', 
         unit='Bottle', 
-        volume=1000, 
-        alcohol_content=37.5
+        volume=1000 
     ),
     Item(
         name='Poor Toms Strawberry Gin',
@@ -96,8 +88,7 @@ def create_inventory():
         type='Gin', 
         company='Poor Toms', 
         unit='Bottle', 
-        volume=1000, 
-        alcohol_content=37.5
+        volume=1000 
     ),
     Item(
         name='Bloody Shiraz Gin',
@@ -105,8 +96,7 @@ def create_inventory():
         type='Gin', 
         company='Four Pillars', 
         unit='Bottle', 
-        volume=1000, 
-        alcohol_content=37.5
+        volume=1000 
     )
     ]
     db.session.query(Item).delete()
