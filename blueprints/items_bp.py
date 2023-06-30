@@ -14,7 +14,7 @@ def items():
     item = db.session.scalars(stmt).all()
     return ItemSchema(many=True).dumps(item)
 
-
+#Create an Item
 @items_bp.route('/add', methods=['POST'])
 def add_stock():
     try:

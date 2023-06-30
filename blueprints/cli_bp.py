@@ -114,7 +114,7 @@ def add_to_stock():
         stock_item = Stock.query.filter_by(name=item.name, type=item.type).first() #check to see if the item is already in the stock table
         if stock_item is None:
             stock_item = Stock(
-            item = item,
+            info = item,
             name = item.name,
             category = item.category,
             type = item.type,

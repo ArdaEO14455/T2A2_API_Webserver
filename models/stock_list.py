@@ -9,7 +9,7 @@ from models.items import ItemSchema
 class Stock_list(db.Model):
     __tablename__ = 'stock_list'
 
-    id = db.Column(db.Integer, primary_key=True)
+    stocklist_id = db.Column(db.Integer, primary_key=True)
 
     bar_id = db.Column(db.Integer, db.ForeignKey('bar_items.bar_id'))
 
@@ -25,8 +25,9 @@ class Stock_list_Schema(ma.Schema):
     name = fields.String()
     category = fields.String()
     type = fields.String()
-    quantity_needed = fields.Integer(required=True, validate=(Regexp('^[0-9]+$', error='Invalid quantity')))
+    quantity_needed = fields.Integer(required=True)
     
     class Meta:
+        fields = ('name', 'category', 'type', 'quantity_needed')
         ordered = True
     
