@@ -1,8 +1,5 @@
 from init import db, ma
-from marshmallow import fields, validates_schema
-from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
-# from models.items import ItemSchema
-from models.items import ItemSchema
+from marshmallow import fields
 
 
 #Stock List Model
@@ -28,6 +25,6 @@ class Stock_list_Schema(ma.Schema):
     quantity_needed = fields.Integer(required=True)
     
     class Meta:
-        fields = ('name', 'category', 'type', 'quantity_needed')
+        fields = ('stocklist_id', 'name', 'category',  'type', 'quantity_needed')
         ordered = True
     

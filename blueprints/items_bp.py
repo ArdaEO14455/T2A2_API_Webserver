@@ -15,11 +15,16 @@ def items():
     return ItemSchema(many=True).dumps(item)
 
 #Create an Item
-@items_bp.route('/add', methods=['POST'])
+@items_bp.route('/', methods=['POST'])
 def add_stock():
     try:
         #Load POST data via the Schema
         item_details = ItemSchema().load(request.json)
+
+        # Check if an item with the same name already exists
+        existing_item = Item.query.filter_by(name=item_details['name']).first()
+        if existing_item:
+            raise ValueError
         #Create new item instance
         item = Item(
             name = item_details['name'],
@@ -33,9 +38,9 @@ def add_stock():
         db.session.add(item)
         db.session.commit()
 
-        return ItemSchema().dump(item), 201
+        return ItemSchema().dump(item), 201 #Return Created Item
     except:
-        TypeError #Integrity Error
+        ValueError
         return jsonify({'error': 'item with that name already exists'}), 409 #Resource already exists 
 
 #Example Input:
@@ -90,7 +95,7 @@ def update_item(item_id):
   else:
     return {'error': 'item not found'}, 404
   
-  
+ 
 #Add all items from the Item Table to the Stock Table, with available-quantities set to 10
 @items_bp.route('/stock_all', methods=['POST'])
 def add_all_to_stock():
@@ -112,4 +117,10 @@ def add_all_to_stock():
     
     return jsonify({'message': 'All items added to stock'}), 201
 
+#Clear Table
+@items_bp.route('/clear', methods=['DELETE'])
+def clear_table():
+   Item.query.delete()
+   db.session.commit()
+   return{}, 200 
 

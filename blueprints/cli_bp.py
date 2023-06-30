@@ -114,7 +114,7 @@ def add_to_stock():
         stock_item = Stock.query.filter_by(name=item.name, type=item.type).first() #check to see if the item is already in the stock table
         if stock_item is None:
             stock_item = Stock(
-            info = item,
+            item_info = item,
             name = item.name,
             category = item.category,
             type = item.type,
@@ -136,7 +136,7 @@ def create_bar_inventory():
         if bar_item is None:
             if stock_item.category == 'Wine':
                 bar_item = Bar(
-                    item = stock_item,
+                    stock_item = stock_item,
                     name= stock_item.name,
                     category = stock_item.category,
                     type = stock_item.type,
@@ -146,24 +146,24 @@ def create_bar_inventory():
                 )
             elif stock_item.category == 'Beer':
                 bar_item = Bar(
-                item = stock_item,
-                name= stock_item.name,
-                category = stock_item.category,
-                type = stock_item.type,
-                quantity = 18,
-                target_quantity = 20,
-                bar_price = 10,
-                )
+                    stock_item = stock_item,
+                    name= stock_item.name,
+                    category = stock_item.category,
+                    type = stock_item.type,
+                    quantity = 18,
+                    target_quantity = 20,
+                    bar_price = 10,
+                    )
             elif stock_item.category == 'Spirit':
-                bar_item = Bar(
-                item = stock_item,
-                name= stock_item.name,
-                category = stock_item.category,
-                type = stock_item.type,
-                quantity = 2,
-                target_quantity = 4,
-                bar_price = 0
-                )
+                    bar_item = Bar(
+                    stock_item = stock_item,
+                    name= stock_item.name,
+                    category = stock_item.category,
+                    type = stock_item.type,
+                    quantity = 2,
+                    target_quantity = 4,
+                    bar_price = 0
+                    )
             
         db.session.add(bar_item)
         db.session.commit()
@@ -174,10 +174,10 @@ def create_bar_inventory():
 
 @cli_bp.cli.command('stock_list')
 def create_stocklist():
+    Stock_list.query.delete()
+    db.session.commit()
     bar_items = db.session.query(Bar).all() #Query the Bar table and iterate over rows
     for item in bar_items: 
-        stock_item = Stock_list.query.filter_by(name=item.name, type=item.type).first() #check to see if the item is already in the stock table
-        if stock_item is None:
             stock_item = Stock_list(
             bar_item = item,
             category = item.category,
@@ -185,8 +185,8 @@ def create_stocklist():
             type = item.type,
             quantity_needed= (item.target_quantity - item.quantity) #determine how many of each item is needed to reach target quantity
             )
-        if stock_item.quantity_needed > 0:
-                
+            if stock_item.quantity_needed > 0:
+                    
                 db.session.close()
                 db.session.add(stock_item)
                 db.session.commit()
@@ -203,17 +203,9 @@ def commit_stocktake():
         bar_item.quantity += stock_list_item.quantity_needed #Add stock-list item quantity to matching bar item quantity
 
         stock_item = Stock.query.filter_by(name=stock_list_item.name).first() #Query Stock table for matching stock-list items based on matching stock ID
-        stock_item.quantity -= stock_list_item.quantity_needed #Subtract stock-list item quantity from matching stock item quantity based on name
+        stock_item.available_stock -= stock_list_item.quantity_needed #Subtract stock-list item quantity from matching stock item quantity based on name
     
     db.session.commit()
     print('Stocktake Completed, Stock Updated')
 
-
-# @cli_bp.cli.command('test_all')
-# def test_all():
-#     create_db()
-#     create_inventory()
-#     add_to_stock()
-#     create_bar_inventory()
-#     create_stocklist()
     

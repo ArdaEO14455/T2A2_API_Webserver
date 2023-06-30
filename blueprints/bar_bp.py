@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from init import db
 from models.bar import Bar, BarSchema
-from models.stock import Stock, StockSchema
+from models.stock import Stock
 from psycopg2 import IntegrityError
 
 
@@ -21,6 +21,11 @@ def add_to_bar(id):
         bar_item_details = BarSchema().load(request.json)
         stmt = db.select(Stock).filter_by(stock_id=id)
         stock_item = db.session.scalar(stmt)
+
+        #Check if an item with the same name already exists
+        existing_item = Bar.query.filter_by(stock_id=stock_item.stock_id).first()
+        if existing_item:
+            raise ValueError
         
         if stock_item:
             # Create a new Bar instance
@@ -47,6 +52,14 @@ def add_to_bar(id):
     except:
         IntegrityError
         return jsonify({'error': 'bar item with that name already exists'}), 409 #Resource already exists 
+
+#Example:
+#Remember to add the item Id to the URL first, e.g.: localhost:5000/bar/4
+#JSON input:
+#{ 
+#     "quantity": 8,
+#     "quantity_needed": 10
+#}
 
 
 # #Find an item:
@@ -79,11 +92,18 @@ def update_item(bar_id):
   bar_item = db.session.scalar(stmt)
   bar_item_info = BarSchema().load(request.json)
   if bar_item:
-    bar_item.quantity = bar_item_info.get('quantity', bar_item.quantity)
-    bar_item.target_quantity = bar_item_info.get('target_quantity', bar_item.target_quantity)
+    bar_item.quantity = bar_item_info.get('quantity', bar_item.quantity) #input quantity through JSON load
+    bar_item.target_quantity = bar_item_info.get('target_quantity', bar_item.target_quantity) #input target_quantity through JSON load
     
     db.session.commit()
     return BarSchema().dump(bar_item)
   else:
     return {'error': 'item not found'}, 404
+  
+#Clear Bar Table
+@bar_bp.route('/clear', methods=['DELETE'])
+def clear_table():
+    Bar.query.delete()
+    db.session.commit()
+    return{}, 200
 

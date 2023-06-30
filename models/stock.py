@@ -11,7 +11,7 @@ class Stock(db.Model):
 
     stock_id = db.Column(db.Integer, primary_key=True)
 
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) #Foreign key for item_id from item table
 
     name = db.Column(db.String())
     category = db.Column(db.String())
@@ -21,17 +21,17 @@ class Stock(db.Model):
     cost_price = db.Column(db.Integer)
 
 
-    info = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
+    item_info = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
 
 
 #Stock Schema
 class StockSchema(ma.Schema):
     # stock_id = fields.Integer(required=True)
     # name = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
-    info = fields.Nested(ItemSchema, exclude=['name'])
+    item_info = fields.Nested(ItemSchema, exclude=['name'])
     available_stock = fields.Integer(required=True)
     cost_price = fields.Integer()
     
     class Meta:
-        fields = ('name', 'info', 'stock_id', 'available_stock', 'cost_price')
+        fields = ('name', 'stock_id', 'item_info' , 'available_stock', 'cost_price')
         ordered = True
