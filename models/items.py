@@ -11,14 +11,15 @@ class Item(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.String(), unique=True)
-    category = db.Column(db.String()) #Beer, Wine, Spirit as basic categories. Also distinction is necessary for cli_commands for example stock generation & testing functionality
-    type = db.Column(db.String()) #sub-category of the above category - Pale ale, Pinot Noir, etc.
-    company = db.Column(db.String())
-    unit = db.Column(db.String()) #Distinguish container for stock item, as distinguishing between a can of beer and a keg is important
+    name = db.Column(db.String(50), unique=True, nullable = False)
+    category = db.Column(db.String(50)) #Beer, Wine, Spirit as basic categories. Also distinction is necessary for cli_commands for example stock generation & testing functionality
+    type = db.Column(db.String(50)) #sub-category of the above category - Pale ale, Pinot Noir, etc.
+    company = db.Column(db.String(50))
+    unit = db.Column(db.String(50)) #Distinguish container for stock item, as distinguishing between a can of beer and a keg is important
     volume = db.Column(db.Integer) #Fluff parameter to add some additional information, not crucial for functionality
 
-
+    stock_items = db.relationship('Stock', backref='item', lazy=True, cascade='save-update, delete')
+    
 class ItemSchema(ma.Schema):
     name = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
     category = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))

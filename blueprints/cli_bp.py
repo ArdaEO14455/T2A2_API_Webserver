@@ -114,7 +114,7 @@ def add_to_stock():
         stock_item = Stock.query.filter_by(name=item.name, type=item.type).first() #check to see if the item is already in the stock table
         if stock_item is None:
             stock_item = Stock(
-            item_info = item,
+            item = item,
             name = item.name,
             category = item.category,
             type = item.type,
@@ -136,7 +136,7 @@ def create_bar_inventory():
         if bar_item is None:
             if stock_item.category == 'Wine':
                 bar_item = Bar(
-                    stock_item = stock_item,
+                    #stock_item = stock_item,
                     name= stock_item.name,
                     category = stock_item.category,
                     type = stock_item.type,
@@ -146,7 +146,7 @@ def create_bar_inventory():
                 )
             elif stock_item.category == 'Beer':
                 bar_item = Bar(
-                    stock_item = stock_item,
+                    #stock_item = stock_item,
                     name= stock_item.name,
                     category = stock_item.category,
                     type = stock_item.type,
@@ -155,15 +155,17 @@ def create_bar_inventory():
                     bar_price = 10,
                     )
             elif stock_item.category == 'Spirit':
-                    bar_item = Bar(
-                    stock_item = stock_item,
+                bar_item = Bar(
+                    #new_item = stock_item,
                     name= stock_item.name,
                     category = stock_item.category,
                     type = stock_item.type,
                     quantity = 2,
                     target_quantity = 4,
                     bar_price = 0
-                    )
+                )
+
+            bar_item.stock_id = stock_item.stock_id
             
         db.session.add(bar_item)
         db.session.commit()

@@ -10,26 +10,25 @@ class Stock(db.Model):
 
     stock_id = db.Column(db.Integer, primary_key=True)
 
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable = False) #Foreign key for item_id from item table
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id', onupdate='CASCADE'), nullable = False) #Foreign key for item_id from item table
 
-    name = db.Column(db.String())
-    category = db.Column(db.String())
-    type = db.Column(db.String())
+    name = db.Column(db.String(50))
+    category = db.Column(db.String(50))
+    type = db.Column(db.String(50))
 
     available_stock = db.Column(db.Integer)
     cost_price = db.Column(db.Integer)
 
 
-    item_info = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
+    #item_info = db.relationship('Item', backref=db.backref('stock_items', lazy='dynamic', cascade='save-update'))
+    bar_item = db.relationship('Bar', backref='stock_item', lazy=True, cascade='save-update, delete')
 
 
 #Stock Schema
 class StockSchema(ma.Schema):
-    stock_id = fields.Integer(required=True)
-    item_info = fields.Nested(ItemSchema)
     available_stock = fields.Integer(required=True)
     cost_price = fields.Integer()
     
     class Meta:
-        fields = ('stock_id', 'item_info' , 'available_stock', 'cost_price')
+        fields = ('stock_id', 'name', 'category', 'type', 'available_stock', 'cost_price')
         ordered = True
