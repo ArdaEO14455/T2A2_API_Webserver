@@ -1,9 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models.items import *
 from models.stock import *
-from models.bar import *
-from models.stock_list import *
-from psycopg2 import IntegrityError
 
 items_bp = Blueprint('items', __name__, url_prefix='/items')
 
@@ -43,7 +40,7 @@ def add_stock():
         ValueError
         return jsonify({'error': 'item with that name already exists'}), 409 #Resource already exists 
 
-#Example Input:
+#Example JSON Input:
 
 # {
 #     "name": "Little Giant",
@@ -91,6 +88,7 @@ def update_item(item_id):
     item.unit = item_info.get('unit', item.unit)
     item.volume = item_info.get('volume', item.volume)
     db.session.commit()
+    return ('Item Updated')
     return ItemSchema().dump(item)
   else:
     return {'error': 'item not found'}, 404

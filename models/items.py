@@ -3,8 +3,8 @@ from marshmallow import fields, validates_schema
 from marshmallow.validate import Regexp, ValidationError
 
 
-VALID_CATEGORIES = ['Beer', 'Wine', 'Spirit']
-VALID_UNITS = ['Can', 'Bottle', 'Keg']
+VALID_CATEGORIES = ['Other', 'Beer', 'Wine', 'Spirit']
+VALID_UNITS = ['Other', 'Can', 'Bottle', 'Keg']
 
 class Item(db.Model):
     __tablename__ = 'items'
@@ -24,7 +24,7 @@ class ItemSchema(ma.Schema):
     category = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
     type = fields.String(required=True, validate=(Regexp('^[a-zA-Z\s]+$', error='Special Characters (#,$,@ etc) are not allowed')))
     company = fields.String()
-    unit = fields.String()
+    unit = fields.String(load_default=VALID_UNITS[0])
     volume = fields.Integer()
 
 

@@ -58,7 +58,7 @@ def add_to_bar(id):
 #JSON input:
 #{ 
 #     "quantity": 8,
-#     "quantity_needed": 10
+#     "target_quantity": 10
 #}
 
 

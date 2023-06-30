@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from init import db
 from models.stock_list import Stock_list, Stock_list_Schema
-from models.bar import Bar, BarSchema
+from models.bar import Bar
 from models.stock import Stock
-from psycopg2 import IntegrityError
+
 
 
 
@@ -16,6 +16,14 @@ def view_stocklist():
     stock_list = db.session.scalars(stmt).all()
     return Stock_list_Schema(many=True).dumps(stock_list)
 
+#Clear Bar Table
+@stocklist_bp.route('/clear', methods=['DELETE'])
+def clear_table():
+    Stock_list.query.delete()
+    db.session.commit()
+    return{}, 200
+
+#Add item from Bar table to stocklist table using Bar ID
 @stocklist_bp.route('/<int:stocklist_id>', methods=['POST'])
 def add_to_stock_list(stocklist_id):
     try:
@@ -24,7 +32,7 @@ def add_to_stock_list(stocklist_id):
         bar_item = db.session.scalar(stmt)
 
         # # Check if an item with the same name already exists
-        existing_item = Bar.query.filter_by(bar_id=bar_item.item.id).first()
+        existing_item = Stock_list.query.filter_by(bar_id=bar_item.bar_id).first()
         if existing_item:
           raise ValueError
         
@@ -50,9 +58,15 @@ def add_to_stock_list(stocklist_id):
         else:
             return jsonify({'error': 'Item not found'}), 404
     except:
-        IntegrityError
-        return jsonify({'error': 'bar item with that name already exists'}), 409 #Resource already exists 
+        ValueError
+        return jsonify({'error': 'stocklist item with that name already exists'}), 409 #Resource already exists 
 
+#Example:
+#Remember to add the item Id to the URL first, e.g.: localhost:5000/stocklist/4
+#JSON input:
+#{ 
+#     "quantity_needed": 3
+#}
 
 # #Find an item:
 @stocklist_bp.route('/<int:stocklist_id>', methods=['GET'])
@@ -84,11 +98,11 @@ def update_item(stocklist_id):
   stocklist_item = db.session.scalar(stmt)
   stocklist_item_info = Stock_list_Schema().load(request.json)
   if stocklist_item:
-    stocklist_item.quantity = stocklist_item_info.get('quantity', stocklist_item.quantity)
-    stocklist_item.target_quantity = stocklist_item_info.get('target_quantity', stocklist_item.target_quantity)
+    stocklist_item.quantity_needed = stocklist_item_info.get('quantity_needed', stocklist_item.quantity_needed)
+    # stocklist_item.target_quantity = stocklist_item_info.get('target_quantity', stocklist_item.target_quantity)
     
     db.session.commit()
-    return BarSchema().dump(bar_item)
+    return Stock_list_Schema().dump(stocklist_item)
   else:
     return {'error': 'item not found'}, 404
   
@@ -108,7 +122,7 @@ def create_stocklist():
             type = item.type,
             quantity_needed= (item.target_quantity - item.quantity) #determine how many of each item is needed to reach target quantity
             )
-            if stock_item.quantity_needed > 0:
+            if stock_item.quantity_needed > 0: #only add items if there is missing stock in the bar
                     
                 db.session.close()
                 db.session.add(stock_item)

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from init import db
 from models.stock import Stock, StockSchema
-from models.items import Item, ItemSchema
+from models.items import Item
 
 
 stock_bp = Blueprint('stock', __name__, url_prefix='/stock')

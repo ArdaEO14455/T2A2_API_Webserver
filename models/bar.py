@@ -1,6 +1,7 @@
 from init import db, ma
 from marshmallow import fields
 from models.items import ItemSchema
+from models.stock import StockSchema
 
 
 #Bar Model
@@ -15,18 +16,18 @@ class Bar(db.Model):
     type = db.Column(db.String())
     category = db.Column(db.String())
     quantity = db.Column(db.Integer)
-    target_quantity = db.Column(db.Integer) # This represents the quantities that each bar item needs to be reset to during stock_take
+    target_quantity = db.Column(db.Integer) # This represents the quantities that each bar item needs to be reset
     bar_price = db.Column(db.Integer)
 
-    stock_item = db.relationship('Stock', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
+    bar_item = db.relationship('Stock', backref=db.backref('bar_items', lazy='dynamic', cascade='save-update'))
 
 
 class BarSchema(ma.Schema):
-    stock_item = fields.Nested(ItemSchema, exclude=['alcohol_content'])
+    bar_item = fields.Nested(StockSchema, exclude=['stock_id', 'available_stock', 'cost_price'])
     quantity = fields.Integer(required=True, error='Invalid quantity')
     target_quantity = fields.Integer(required=True, error='Invalid quantity, Target Quantity must be inputted')
     
     class Meta:
-        fields = ('stock_item', 'bar_id', 'quantity', 'target_quantity')
+        fields = ('bar_id', 'bar_item', 'quantity', 'target_quantity')
         ordered = True
 
