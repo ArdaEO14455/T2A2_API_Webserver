@@ -174,7 +174,7 @@ def create_bar_inventory():
 
 #Create Stocklist Command
 
-@cli_bp.cli.command('stock_list')
+@cli_bp.cli.command('stocklist')
 def create_stocklist():
     Stock_list.query.delete()
     db.session.commit()

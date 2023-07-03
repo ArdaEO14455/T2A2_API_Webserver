@@ -837,11 +837,14 @@ Dotenv is a Python library that allows specification of environmental variables 
 
 Development of the app was planned and tracked using a Trello board to distinguish the different components of the app, and the order they would be built up:
 
+Trello Board: https://trello.com/b/fV1IFU7P/api-webserver
+
 ![Trello Board](docs/Trello_Board.png)
 
  The first step was to create an ERD to illustrate the design of the Database entities, their attributes, and their relationships, how they would back-fill one another and how they would be represented when returned.
  
 ![ERD Creation](docs/T2A2_ERD.png)
+![ERD](docs/T2A2_ERD.png)
 
 From there, PostgreSQL was installed, the server was started, and the database was created along with the user, allocating privileges so that the application could interact with the database, make queries and manipulate the data. 
 
@@ -861,8 +864,14 @@ From there, the necessary third party applications were installed and the initia
 
 
 
- Cli commands were then created to test the functionality of the models within the app. These commands allowed me to populate the models and test how smoothly the models shared data, and how changes cascaded from one another.
- 
+ Cli commands were then created to test the functionality of the models within the app. These commands allowed me to populate the models and test how smoothly the models shared data, and how changes cascaded from one another:
+*  flask db create: generates and commits all table models
+*  flask db generate_items: populates the Item table with sample data
+*  flask db add_stock: adds all entities in the Item table to the Stock table, adding preset values where necessary
+*  flask db bar_inventory: adds all entities in the Stock table to the Bar table, adding preset values where necessary
+*  flask db stocklist: adds all entities in the Bar table to the Stock_list table, adding the 'quantity_needed' value based on the 'quantity' and 'target_quantity' values in the Bar table.
+*  flask db commit_stocktake: updates the Stock and Bar table based on Stock_list 'quantity_needed' value, and resets the Stock_list table
+
  ![cli_commands_card](docs/cli_card.png)
  ![stock_take](docs/stock_take_card.png)
 
