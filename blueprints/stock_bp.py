@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from init import db
 from models.stock import Stock, StockSchema
 from models.items import Item
@@ -11,8 +11,10 @@ stock_bp = Blueprint('stock', __name__, url_prefix='/stock')
 def stock():
     stmt = db.Select(Stock).order_by(Stock.category.desc())
     stock = db.session.scalars(stmt).all()
-    return StockSchema(many=True).dumps(stock)
-
+    if stock:
+      return StockSchema(many=True).dumps(stock)
+    else:
+      return {'error': 'No stock items found'}, 404
 
 #Add Stock item from Item Table based on Item ID
 @stock_bp.route('/<int:id>', methods=['POST'])
@@ -47,10 +49,10 @@ def add_to_stock(id):
           
           return StockSchema().dump(stock), 201
       else:
-          return jsonify({'error': 'Item not found'}), 404
+          return ({'error': 'Item not found'}), 404
   except:
       ValueError
-      return jsonify({'error': 'stock item with that item ID already exists'}), 409 #Resource already exists 
+      return ({'error': 'stock item with that item ID already exists'}), 409 #Resource already exists 
 
 #Example:
 #Remember to add the item Id to the URL first, e.g.: localhost:5000/stock/4
@@ -69,7 +71,7 @@ def stock_item(stock_id):
   if stock_item:
     return StockSchema().dump(stock_item)
   else:
-    return {'error': 'Card not found'}, 404
+    return {'error': 'stock item not found'}, 404
 
 #Delete an item:
 @stock_bp.route('/<int:stock_id>', methods=['Delete'])
@@ -79,9 +81,9 @@ def delete_item(stock_id):
     if stock_item:
         db.session.delete(stock_item)
         db.session.commit()
-        return {}, 200
+        return ('Stock Item Deleted'), 200
     else:
-        return{'error': 'Item does not exist'}, 404
+        return ('error: Stock Item does not exist'), 404
 
 
 #Update an item
@@ -98,7 +100,7 @@ def update_item(stock_id):
     db.session.commit()
     return StockSchema().dump(stock_item)
   else:
-    return {'error': 'item not found'}, 404
+    return ('error: stock item not found'), 404
 
 
 #Clear Stock Table
@@ -106,4 +108,25 @@ def update_item(stock_id):
 def clear_table():
    Stock.query.delete()
    db.session.commit()
-   return{}, 200
+   return ('Table Cleared'), 200
+
+#Add all items from the Item Table to the Stock Table, with available-quantities set to 10
+@stock_bp.route('/add_all', methods=['POST'])
+def add_all():
+    items = Item.query.all()
+    for item in items:
+        stock = Stock(
+            item_id = item.id,
+            name = item.name,
+            category = item.category,
+            type = item.type,
+            available_stock = 10,
+            cost_price = 0
+        )
+        
+        db.session.add(stock)
+        db.session.commit()
+    if item:
+        return ('All items added to stock'), 201
+    else:
+       return {'error': 'item not found'}, 404

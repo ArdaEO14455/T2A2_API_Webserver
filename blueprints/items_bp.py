@@ -1,15 +1,18 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from models.items import *
 from models.stock import *
 
 items_bp = Blueprint('items', __name__, url_prefix='/items')
 
 
-@items_bp.route('/')
+@items_bp.route('/', methods=['GET'])
 def items():
     stmt = db.Select(Item).order_by(Item.category.desc())
     item = db.session.scalars(stmt).all()
-    return ItemSchema(many=True).dumps(item)
+    if item:
+        return ItemSchema(many=True).dumps(item)
+    else:
+        return {'error': 'No items found'}, 404
 
 #Create an Item
 @items_bp.route('/', methods=['POST'])
@@ -38,28 +41,17 @@ def add_stock():
         return ItemSchema().dump(item), 201 #Return Created Item
     except:
         ValueError
-        return jsonify({'error': 'item with that name already exists'}), 409 #Resource already exists 
-
-#Example JSON Input:
-
-# {
-#     "name": "Little Giant",
-#     "category": "wine",
-#     "type": "Shiraz",
-#     "company": "Unknown",
-#     "unit": "Bottle",
-#     "volume": 500
-# }
+        return ({'error': 'item with that name already exists'}), 409 #Resource already exists 
 
 #Find an item:
 @items_bp.route('/<int:item_id>')
-def one_card(item_id):
+def one_item(item_id):
   stmt = db.select(Item).filter_by(id=item_id)
   item = db.session.scalar(stmt)
   if item:
     return ItemSchema().dump(item)
   else:
-    return {'error': 'Card not found'}, 404
+    return {'error': 'Item not found'}, 404
 
 #Delete an item:
 @items_bp.route('/<int:item_id>', methods=['DELETE'])
@@ -69,7 +61,7 @@ def delete_item(item_id):
     if item:
         db.session.delete(item)
         db.session.commit()
-        return {}, 200
+        return ('Item Deleted'), 200
     else:
         return{'error': 'Item does not exist'}, 404
     
@@ -83,12 +75,11 @@ def update_item(item_id):
   if item:
     item.name = item_info.get('name', item.name)
     item.category = item_info.get('category', item.category)
-    item.type = item_info.get('status', item.type)
+    item.type = item_info.get('type', item.type)
     item.company = item_info.get('company', item.company)
     item.unit = item_info.get('unit', item.unit)
     item.volume = item_info.get('volume', item.volume)
     db.session.commit()
-    return ('Item Updated')
     return ItemSchema().dump(item)
   else:
     return {'error': 'item not found'}, 404
@@ -112,13 +103,15 @@ def add_all_to_stock():
         db.session.add(stock)
     
     db.session.commit()
-    
-    return jsonify({'message': 'All items added to stock'}), 201
+    if item:
+        return ({'message': 'All items added to stock'}), 201
+    else:
+       return {'error': 'item not found'}, 404
 
 #Clear Table
 @items_bp.route('/clear', methods=['DELETE'])
 def clear_table():
    Item.query.delete()
    db.session.commit()
-   return{}, 200 
+   return ('Table Cleared'), 200 
 

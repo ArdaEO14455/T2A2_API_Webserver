@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from init import db
 from models.stock_list import Stock_list, Stock_list_Schema
 from models.bar import Bar
@@ -14,7 +14,10 @@ stocklist_bp = Blueprint('stocklist', __name__, url_prefix='/stocklist')
 def view_stocklist():
     stmt = db.Select(Stock_list).order_by(Stock_list.quantity_needed.desc())
     stock_list = db.session.scalars(stmt).all()
-    return Stock_list_Schema(many=True).dumps(stock_list)
+    if stock_list:
+        return Stock_list_Schema(many=True).dumps(stock_list)
+    else:
+      return ('error: No stocklist items found'), 404
 
 #Clear Bar Table
 @stocklist_bp.route('/clear', methods=['DELETE'])
@@ -37,7 +40,7 @@ def add_to_stock_list(stocklist_id):
           raise ValueError
         
         if bar_item:
-            # Create a new Bar instance
+            # Create a new Stocklist instance
             stock_list_item = Stock_list(
                 #most item information is back-filled
                 bar_id = bar_item.bar_id,
@@ -45,7 +48,7 @@ def add_to_stock_list(stocklist_id):
                 category = bar_item.category,
                 type = bar_item.type,
 
-                #available stock and its cost price need to be added individually
+                #quantity_needed = stock_list_details['quantity_needed'],
                 quantity_needed = stock_list_details['quantity_needed'],
       
             )
@@ -56,10 +59,10 @@ def add_to_stock_list(stocklist_id):
             
             return Stock_list_Schema().dump(stock_list_item), 201
         else:
-            return jsonify({'error': 'Item not found'}), 404
+            return ({'error': 'bar Item not found'}), 404
     except:
         ValueError
-        return jsonify({'error': 'stocklist item with that name already exists'}), 409 #Resource already exists 
+        return ({'error': 'stocklist item with that name already exists'}), 409 #Resource already exists 
 
 #Example:
 #Remember to add the item Id to the URL first, e.g.: localhost:5000/stocklist/4
@@ -76,7 +79,7 @@ def bar_item(stocklist_id):
   if bar_item:
     return Stock_list_Schema().dumps(stocklist_item)
   else:
-    return {'error': 'Bar Item not found'}, 404
+    return {'error: stocklist Item not found'}, 404
 
 # #Delete an item:
 @stocklist_bp.route('/<int:bar_id>', methods=['DELETE'])
@@ -86,9 +89,9 @@ def delete_item(stocklist_id):
     if stocklist_item:
         db.session.delete(stocklist_item)
         db.session.commit()
-        return {}, 200
+        return ('Stocklist Item Deleted'), 200
     else:
-        return{'error': 'Bar Item does not exist'}, 404
+        return{'error': 'stocklist Item does not exist'}, 404
 
 
 #Update an item
@@ -104,7 +107,7 @@ def update_item(stocklist_id):
     db.session.commit()
     return Stock_list_Schema().dump(stocklist_item)
   else:
-    return {'error': 'item not found'}, 404
+    return {'error': 'stocklist item not found'}, 404
   
 
 #Create Stocklist Function
@@ -133,6 +136,7 @@ def create_stocklist():
     stock_list = db.session.scalars(stmt).all()
     return Stock_list_Schema(many=True).dumps(stock_list), 200
 
+
 #Commit Stocktake & Update Bar & Stock Quantities
 @stocklist_bp.route('/commit', methods=['PATCH'])
 def commit_stocktake():
@@ -147,3 +151,4 @@ def commit_stocktake():
     Stock_list.query.delete()
     db.session.commit()
     return ('Stocktake Completed, Stock Updated')
+
